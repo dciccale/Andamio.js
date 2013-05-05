@@ -24,6 +24,7 @@
       define(['underscore', 'backbone'], factory);
     }
   }(this, function (_, Backbone) {
+    /* jshint unused: vars */
     return Andamio;
   }));
 

@@ -15,6 +15,7 @@ _.extend(Andamio.Application.prototype, Backbone.Events, {
   initialize: function () {},
 
   show: function (view, name, urlParams) {
+    /* jshint unused: vars */
     this._ensureEl();
     if (view !== this.currentView) {
       this._close();
@@ -22,7 +23,7 @@ _.extend(Andamio.Application.prototype, Backbone.Events, {
     } else {
       view.render();
     }
-    return this.currentView = view;
+    this.currentView = view;
   },
 
   _ensureEl: function () {

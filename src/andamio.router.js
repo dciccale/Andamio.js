@@ -1,5 +1,8 @@
 Andamio.Router = Backbone.Router.extend({
   constructor: function (options) {
+    if (options.routes) {
+      this.routes = options.routes;
+    }
     this._initRoutes();
   },
 

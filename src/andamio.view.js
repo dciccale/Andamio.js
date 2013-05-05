@@ -22,7 +22,7 @@ Andamio.View = Backbone.View.extend({
   },
 
   _serializeData: function (data) {
-    data = this.model ? this.model.toJSON() : this.collection ? this.collection.toJSON() : data
+    data = this.model ? this.model.toJSON() : this.collection ? this.collection.toJSON() : data;
     return this._mixinTemplateHelpers(data);
   },
 
@@ -33,7 +33,7 @@ Andamio.View = Backbone.View.extend({
       return function (view) {
         view.$el = $el;
         view.render();
-      }
+      };
     };
 
     if (!$regions.length) {
@@ -61,7 +61,7 @@ Andamio.View = Backbone.View.extend({
     }
 
     // delete all of the existing ui bindings
-    this._deleteProp(this.regions);
+    this._deleteProp('regions');
     this.regions = {};
   },
 
@@ -79,7 +79,7 @@ Andamio.View = Backbone.View.extend({
   _bindSubviews: function () {
     // create hash of subviews (name: view)
     this._bindProp('subviews', function (bindings, prop, key) {
-      this[prop][key] = new bindings[key];
+      this[prop][key] = bindings[key];
     });
   },
 
@@ -93,7 +93,7 @@ Andamio.View = Backbone.View.extend({
       return;
     }
 
-    this._deleteProp(this[prop]);
+    this._deleteProp(prop);
     this[prop] = this[_prop];
     delete this[_prop];
   },
@@ -120,19 +120,20 @@ Andamio.View = Backbone.View.extend({
   },
 
   _removeSubviews: function () {
-    this._deleteProp(this.subviews, function (view) {
+    this._deleteProp('subviews', function (view) {
       view.remove();
     });
   },
 
-  _deleteProp: function (obj, callback) {
+  _deleteProp: function (prop, callback) {
+    var obj = this[prop];
     _.each(obj, function (item, name) {
       if (callback) {
         callback.call(this, item, name);
       }
       delete obj[name];
     }, this);
-    delete obj;
+    delete this[prop];
   },
 
   remove: function () {
