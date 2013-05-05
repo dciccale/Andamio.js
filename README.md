@@ -1,4 +1,3 @@
-Andamio.js
-==========
+# Andamio.js
 
-A lightweight and structured but flexible framework on top of Backbone.js
+A mini framework to ease the development of your Backbone.js apps.
