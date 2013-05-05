@@ -24,9 +24,9 @@
   "devDependencies": {
     "grunt": "0.4.x",
     "grunt-directives": "0.1.x",
-    "grunt-contrib-jshint": "0.3.x",
+    "grunt-contrib-jshint": "0.4.x",
     "grunt-contrib-uglify": "0.2.x",
-    "grunt-contrib-watch": "0.3.x"
+    "grunt-contrib-watch": "0.4.x"
   },
   "keywords": ["backbone", "andamio", "plugin", "single", "page", "app"]
 }
