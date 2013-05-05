@@ -3,7 +3,9 @@
 
   var Andamio = {
     // use default DOM library
-    $: Backbone.$
+    $: Backbone.$,
+
+    extend: Backbone.Model.extend
   };
 
   // @include andamio.view.js
