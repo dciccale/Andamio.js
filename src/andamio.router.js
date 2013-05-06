@@ -1,8 +1,8 @@
 Andamio.Router = Backbone.Router.extend({
   constructor: function (options) {
     _.extend(this, options);
-    if (!this.views) {
-      throw new Error('Provide a correct path for the views in the "views" option.');
+    if (!this.viewsPath) {
+      throw new Error('Provide a correct path for the views in the "viewsPath" option.');
     }
     this._initRoutes();
     this.initialize.apply(this, arguments);
@@ -10,7 +10,8 @@ Andamio.Router = Backbone.Router.extend({
 
   initialize: function () {},
 
-  views: '',
+  // default view files path
+  viewsPath: 'views/',
 
   _initRoutes: function () {
     _.each(this.routes, function (route) {
@@ -25,12 +26,12 @@ Andamio.Router = Backbone.Router.extend({
     var router = this;
     var callback = function () {
       var urlParams = arguments;
-      require([router.views + view], function (View) {
+      require([router.viewsPath + view], function (View) {
         var _view = new View;
-        if (_.isFunction(_view.loadModel)) {
-          _view.loadModel.apply(_view, urlParams);
+        if (_view.model && _.isFunction(_view.model.load)) {
+          _view.model.load.apply(_view.model, urlParams);
         }
-        router.trigger('navigate', url, _view, urlParams);
+        router.trigger('navigate', _view, url, urlParams);
       });
     };
     return callback;
