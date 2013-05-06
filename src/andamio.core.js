@@ -8,7 +8,9 @@
     extend: Backbone.Model.extend
   };
 
+  // @include andamio.bindevents.js
   // @include andamio.view.js
+  // @include andamio.model.js
   // @include andamio.router.js
   // @include andamio.application.js
 
