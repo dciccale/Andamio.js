@@ -54,9 +54,8 @@ Andamio.View = Backbone.View.extend({
       return;
     }
 
-    // delete all of the existing ui bindings
+    // delete region bindings
     this._deleteProp('regions');
-    this.regions = {};
   },
 
   _bindUIElements: function () {
@@ -83,11 +82,15 @@ Andamio.View = Backbone.View.extend({
 
     this._deleteProp('ui');
     this.ui = this._ui;
+    delete this._ui;
   },
 
-  _unbindSubviews: function () {
+  _removeSubviews: function () {
+    if (!this.subviews) {
+      return;
+    }
     _.invoke(this.subviews, 'close');
-    delete this.subviews;
+    this._deleteProp('subviews');
   },
 
   // clean up the view and remove from DOM
@@ -97,8 +100,8 @@ Andamio.View = Backbone.View.extend({
     }
     this.isClosed = true;
 
-    // unbind and remove subviews
-    this._unbindSubviews();
+    // remove subviews
+    this._removeSubviews();
     // unbind regions and ui
     this._unbindRegions();
     this._unbindUIElements();
@@ -121,16 +124,10 @@ Andamio.View = Backbone.View.extend({
     Andamio.unbindEvents(this, this.collection, this.collectionEvents);
   },
 
-  // ----------------
-  // Helper methods
-
   // helper method to correctly delete properties
-  _deleteProp: function (prop, callback) {
+  _deleteProp: function (prop) {
     var obj = this[prop];
     _.each(obj, function (item, name) {
-      if (callback) {
-        callback.call(this, item, name);
-      }
       delete obj[name];
     }, this);
     delete this[prop];
