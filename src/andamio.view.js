@@ -28,15 +28,10 @@ Andamio.View = Backbone.View.extend({
   _bindRegions: function () {
     var view = this;
     var $regions = view.$('[data-region]');
-    var show;
 
     if (!$regions.length) {
       return;
     }
-
-    show = function (view) {
-      this.$el.html(view.render().el);
-    };
 
     // regions hash
     view.regions = {};
@@ -46,7 +41,9 @@ Andamio.View = Backbone.View.extend({
       var $el = $(el);
       var key = $el.attr('data-region');
       var Subview = view.subviews[key];
-      view.regions[key] = {$el: $el, show: show};
+      // manage a new region
+      view.regions[key] = new Andamio.Region({$el: $el});
+      // find subview match to set the region
       if (Subview) {
         view.subviews[key] = new Subview({el: $el});
       }
