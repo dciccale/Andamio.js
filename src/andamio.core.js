@@ -9,6 +9,7 @@
   };
 
   // @include andamio.bindevents.js
+  // @include andamio.region.js
   // @include andamio.view.js
   // @include andamio.model.js
   // @include andamio.router.js
