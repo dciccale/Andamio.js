@@ -3,8 +3,10 @@ Andamio.Application = function (options) {
   this.vent = _.extend({}, Backbone.Events);
 };
 
-_.extend(Andamio.Application.prototype, Backbone.Events, {
-  mainRegion: 'main',
+_.extend(Andamio.Application.prototype, Backbone.Events, Andamio.Region, {
+  container: 'body',
+
+  el: 'main',
 
   // starts the app
   start: function () {
@@ -18,44 +20,17 @@ _.extend(Andamio.Application.prototype, Backbone.Events, {
 
   // initialize app router
   _initRouter: function () {
-    this.router = new this.router({app: this});
+    this.router = new this.router();
   },
 
   // initialize app view
   _initAppView: function () {
-    this.appView = new this.appView;
+    this.appView = new this.appView({el: this.container});
     this.appView.render();
-    $('body').empty().append(this.appView.el);
   },
 
-  show: function (view, name, urlParams) {
-    /* jshint unused: vars */
-    this._ensureEl();
-    if (view !== this.currentView) {
-      this._close();
-      view.render();
-      this._open(view);
-    } else {
-      view.render();
-    }
-    this.currentView = view;
-    this.appView.trigger('navigate', view);
-  },
-
-  _ensureEl: function () {
-    if (!this.$el || this.$el.length === 0) {
-      this.$el = $('[data-region="' + this.mainRegion + '"]');
-    }
-  },
-
-  _open: function (view) {
-    this.$el.empty().append(view.el);
-  },
-
-  _close: function () {
-    if (this.currentView) {
-      this.currentView.remove();
-    }
+  onShow: function () {
+    this.appView.trigger('navigate', this.currentView);
   }
 });
 
