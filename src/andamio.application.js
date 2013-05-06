@@ -1,19 +1,34 @@
 Andamio.Application = function (options) {
   _.extend(this, options);
+  this.vent = _.extend({}, Backbone.Events);
 };
 
 _.extend(Andamio.Application.prototype, Backbone.Events, {
-  el: 'body',
+  mainRegion: 'main',
 
   // starts the app
   start: function () {
+    this._initRouter();
+    this._initAppView();
     this.initialize.apply(this, arguments);
     this.listenTo(this.router, 'navigate', this.show);
   },
 
   initialize: function () {},
 
-  show: function (name, view, urlParams) {
+  // initialize app router
+  _initRouter: function () {
+    this.router = new this.router({app: this});
+  },
+
+  // initialize app view
+  _initAppView: function () {
+    this.appView = new this.appView;
+    this.appView.render();
+    $('body').empty().append(this.appView.el);
+  },
+
+  show: function (view, name, urlParams) {
     /* jshint unused: vars */
     this._ensureEl();
     if (view !== this.currentView) {
@@ -24,11 +39,12 @@ _.extend(Andamio.Application.prototype, Backbone.Events, {
       view.render();
     }
     this.currentView = view;
+    this.appView.trigger('navigate', view);
   },
 
   _ensureEl: function () {
     if (!this.$el || this.$el.length === 0) {
-      this.$el = $(this.el);
+      this.$el = $('[data-region="' + this.mainRegion + '"]');
     }
   },
 
