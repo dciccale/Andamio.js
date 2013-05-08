@@ -22,23 +22,23 @@ module.exports = ->
 
     jshint:
       gruntfile:
-        src: ['Gruntfile.js']
         options:
           jshintrc: '.jshintrc'
+        src: ['Gruntfile.js']
 
       lib:
-        src: ['<%= DIST_FILE %>.js']
         options:
           jshintrc: '<%= SRC_DIR %>.jshintrc'
+        src: ['<%= DIST_FILE %>.js']
 
     uglify:
-      dest:
-        files:
-          '<%= DIST_FILE %>.min.js': ['<%= DIST_FILE %>.js']
-
       options:
         banner: '/*! <%= PKG.name %> v<%= PKG.version %> | <%= PKG.homepage %> | <%= PKG.licenses[0].url %> */\n'
         sourceMap: '<%= DIST_FILE %>.sourcemap.js'
+
+      dest:
+        files:
+          '<%= DIST_FILE %>.min.js': ['<%= DIST_FILE %>.js']
 
     watch:
       gruntfile:
