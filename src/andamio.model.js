@@ -27,7 +27,7 @@ Andamio.Model = Backbone.Model.extend({
   },
 
   /* extend model attributes with computed properties
-   * computedProperties: { 
+   * computedProperties: {
    *   fullName: function () {
    *     return this.name + ' ' + this.last;
    *   }
