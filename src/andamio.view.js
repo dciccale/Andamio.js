@@ -1,13 +1,16 @@
 Andamio.View = Backbone.View.extend({
   constructor: function () {
     _.bindAll(this);
+    if (this.model) {
+      this.model = new this.model;
+    }
     Backbone.View.apply(this, arguments);
   },
 
   render: function () {
     this.isClosed = false;
 
-    var data = this._serializeData(data);
+    var data = this._serializeData();
     this.$el.html(this.template(data));
 
     this._bindRegions();
@@ -20,8 +23,8 @@ Andamio.View = Backbone.View.extend({
     return this;
   },
 
-  _serializeData: function (data) {
-    return this.model ? this.model.toJSON() : this.collection ? {items: this.collection.toJSON()} : data;
+  _serializeData: function () {
+    return this.model ? this.model.toJSON() : this.collection ? {items: this.collection.toJSON()} : {};
   },
 
   _bindRegions: function () {
@@ -43,8 +46,10 @@ Andamio.View = Backbone.View.extend({
       // manage a new region
       view.regions[key] = new Andamio.Region({$el: $el});
       // find subview match to set the region
-      if (Subview) {
+      if (Subview && _.isFunction(Subview)) {
         view.subviews[key] = new Subview({el: $el});
+      } else if (Subview) {
+        Subview.setElement($el).render();
       }
     });
   },
