@@ -4,15 +4,18 @@ Andamio.Application = function (options) {
 };
 
 _.extend(Andamio.Application.prototype, Backbone.Events, Andamio.Region, {
-  container: 'body',
+  // selector where the main appview will be rendered
+  container: 'main',
 
-  el: 'main',
+  // data-region where every page will be displayed
+  el: 'page',
 
   // starts the app
-  start: function () {
+  start: function (options) {
+    _.extend(this, options);
     this._initRouter();
-    this._initAppView();
     this.initialize.apply(this, arguments);
+    this._initAppView();
     this.listenTo(this.router, 'navigate', this.show);
   },
 
@@ -21,6 +24,12 @@ _.extend(Andamio.Application.prototype, Backbone.Events, Andamio.Region, {
   // initialize app router
   _initRouter: function () {
     this.router = new this.router();
+    Backbone.history.start();
+    // navigate to default route
+    var defaultRoute = _.findWhere(this.router.routes, {default: true});
+    if (defaultRoute && !Backbone.history.fragment) {
+      this.router.navigate(defaultRoute.url, {trigger: true, replace: true});
+    }
   },
 
   // initialize app view
@@ -30,7 +39,7 @@ _.extend(Andamio.Application.prototype, Backbone.Events, Andamio.Region, {
   },
 
   onShow: function () {
-    this.appView.trigger('navigate', this.currentView);
+    this.vent.trigger('navigate', this.currentView);
   }
 });
 
