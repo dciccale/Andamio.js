@@ -4,6 +4,9 @@ Andamio.View = Backbone.View.extend({
     if (this.model) {
       this.model = new this.model;
     }
+    if (this.collection) {
+      this.collection = new this.collection;
+    }
     Backbone.View.apply(this, arguments);
   },
 
@@ -117,9 +120,9 @@ Andamio.View = Backbone.View.extend({
 
   // override Backbone's delegateEvents to bind model and collection events
   delegateEvents: function (events) {
+    Backbone.View.prototype.delegateEvents.call(this, events);
     Andamio.bindEvents(this, this.model, this.modelEvents);
     Andamio.bindEvents(this, this.collection, this.collectionEvents);
-    Backbone.View.prototype.delegateEvents.call(this, events);
   },
 
   // override Backbone's undelegateEvents to unbind model and collection events
