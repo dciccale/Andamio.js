@@ -1,0 +1,39 @@
+{
+  "name": "andamio-build-script",
+  "description": "Build script for Backbone.Andamio apps",
+  "version": "0.1.0",
+  "homepage": "https://github.com/dciccale/Andamio.js",
+  "author": {
+    "name": "Denis Ciccale"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:dciccale/Andamio.js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dciccale/Andamio.js/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/dciccale/Andamio.js/blob/master/LICENSE.txt"
+    }
+  ],
+  "engines": {
+    "node": ">= 0.8.0"
+  },
+  "dependencies": {
+    "grunt": "0.4.x",
+    "grunt-contrib-copy": "0.4.x",
+    "grunt-contrib-clean": "0.4.x",
+    "grunt-contrib-concat": "0.3.x",
+    "grunt-contrib-uglify": "0.2.x",
+    "grunt-contrib-cssmin": "0.6.x",
+    "grunt-contrib-htmlmin": "0.1.x",
+    "grunt-contrib-jshint": "0.5.x",
+    "grunt-contrib-requirejs": "0.4.x",
+    "grunt-contrib-watch": "0.4.x",
+    "almond": "0.2.x"
+  },
+  "private": true
+}
