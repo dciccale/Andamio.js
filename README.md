@@ -1,5 +1,3 @@
-### Andamio.js
-
 <img src="https://raw.github.com/dciccale/Andamio.js/master/andamiojs-logo.png" width="400" height="67" alt="Andamio.js logo">
 
 A mini framework to ease the development of your Backbone.js apps.
