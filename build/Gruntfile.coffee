@@ -2,6 +2,7 @@
 # Grunt build script for your Backbone.Andamio apps
 #--------------------------------------------------------------------------------
 
+fs = require('fs')
 module.exports = ->
 
   @initConfig
@@ -32,10 +33,8 @@ module.exports = ->
 
     copy:
       index:
-        files: [
-          src: ['../index.html']
-          dest: '<%= TMP_DIR %>/index.html'
-        ]
+        files:
+          '<%= TMP_DIR %>/index.html': '../index.html'
 
       js:
         files: [
@@ -50,12 +49,9 @@ module.exports = ->
     #--------------------------------------------------------------------------------
 
     concat:
-      jsdist:
-        src: [
-          './node_modules/almond/almond.js'
-          '<%= MID_DIR %><%= JS_DIR %>app.js'
-        ]
-        dest: '<%= TMP_DIR %>app.js'
+      js:
+        files:
+          '<%= TMP_DIR %>app.js': ['./node_modules/almond/almond.js', '<%= MID_DIR %><%= JS_DIR %>app.js']
 
 
     #--------------------------------------------------------------------------------
@@ -101,22 +97,19 @@ module.exports = ->
       options:
         removeComments: true
         removeCommentsFromCDATA: true
-        removeEmptyAttributes: true
-        cleanAttributes: true
-        removeAttributeQuotes: true
-        removeRedundantAttributes: true
-        removeScriptTypeAttributes: true
-        removeStyleLinkTypeAttributes: true
+        removeCDATASectionsFromCDATA: true
         collapseWhitespace: true
         collapseBooleanAttributes: true
-        removeOptionalTags: true
+        removeAttributeQuotes: true
+        removeRedundantAttributes: true
+        useShortDoctype: true
 
       index:
         files:
           '<%= DIST_DIR %>index.html': '<%= TMP_DIR %>index.html'
 
     # TEMPLATES
-    templateminifier:
+    tplmin:
       dist:
         files: '<%= TMP_DIR %><%= JS_DIR %>templates/**/*.tpl'
 
@@ -125,26 +118,32 @@ module.exports = ->
     # Optimization
     #--------------------------------------------------------------------------------
 
+    # map view modules
+    views: @file.expand({cwd: '../js'}, ['views/*']).map (f) -> f.replace /\.js$/, ''
+
     requirejs:
       compile:
         options:
-          name: 'app'
-          include: @file.expand({cwd: '../js'}, ['views/*']).map((dir) -> dir.replace(/\.js$/, ''))
+          modules: [
+            name: 'app'
+            include: '<%= views %>'
+          ]
           dir: '<%= MID_DIR %><%= JS_DIR %>'
           appDir: '<%= TMP_DIR %><%= JS_DIR %>'
           baseUrl: '.'
           mainConfigFile: '<%= TMP_DIR %><%= JS_DIR %>config.js'
           optimize: 'none'
+          skipPragmas: true
 
 
     #--------------------------------------------------------------------------------
     # Process index.html for production
     #--------------------------------------------------------------------------------
 
-    processindex:
+    processhtml:
       dest:
         files:
-          '<%= TMP_DIR %>index.html': '<%= TMP_DIR %>index.html'
+          '<%= TMP_DIR %>index.html': ['<%= TMP_DIR %>index.html']
 
 
     #--------------------------------------------------------------------------------
@@ -153,7 +152,7 @@ module.exports = ->
 
     watch:
       jshint:
-        files: '<%= jshint.files %>'
+        files: '<%= jshint.lib.src %>'
         tasks: ['jshint']
 
 
@@ -171,11 +170,12 @@ module.exports = ->
   @loadNpmTasks 'grunt-contrib-jshint'
   @loadNpmTasks 'grunt-contrib-requirejs'
   @loadNpmTasks 'grunt-contrib-watch'
+  @loadNpmTasks 'grunt-processhtml'
 
   # separate dist tasks
-  @registerTask 'js:dist', ['clean:mid', 'copy:js', 'templateminifier', 'requirejs', 'concat', 'uglify', 'clean:temp', 'clean:mid']
+  @registerTask 'js:dist', ['clean:mid', 'copy:js', 'tplmin', 'requirejs', 'concat', 'uglify', 'clean:temp', 'clean:mid']
   @registerTask 'css:dist', ['cssmin:dist']
-  @registerTask 'index:dist', ['clean:mid', 'copy:index', 'processindex', 'htmlmin', 'clean:temp', 'clean:mid']
+  @registerTask 'index:dist', ['clean:mid', 'copy:index', 'processhtml', 'htmlmin', 'clean:temp', 'clean:mid']
 
   # generates production distribution
   @registerTask 'dist', ['clean:dist', 'js:dist', 'css:dist', 'index:dist']

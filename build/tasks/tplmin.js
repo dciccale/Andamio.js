@@ -1,8 +1,8 @@
 /*!
- * Underscore templates minifier
+ * grunt-underscore-tplmin
  * Copyright (c) 2013 Denis Ciccale (@tdecs)
  * Released under the MIT license
- * https://github.com/dciccale/grunt-underscore-tmplmin/blob/master/LICENSE.txt
+ * https://github.com/dciccale/grunt-underscore-tplmin/blob/master/LICENSE.txt
  */
 module.exports = function (grunt) {
 
@@ -11,7 +11,7 @@ module.exports = function (grunt) {
     return _.trim(_.clean(src));
   };
 
-  grunt.registerMultiTask('templateminifier', 'Removes white spaces from templates', function () {
+  grunt.registerMultiTask('tplmin', 'Minify underscore templates removing white spaces', function () {
 
     var files = grunt.file.expand(this.data.files);
 
