@@ -8,7 +8,6 @@ Andamio.Model = Backbone.Model.extend({
   configure: function (options) {
     _.extend(this.defaults, this.constructor.__super__.defaults);
     this.options = options || {};
-    _.bindAll(this);
   },
 
   defaults: {

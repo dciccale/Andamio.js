@@ -1,6 +1,6 @@
 Andamio.View = Backbone.View.extend({
   constructor: function () {
-    _.bindAll(this);
+    _.bindAll(this, 'render');
     if (this.model) {
       this.model = new this.model;
     }
@@ -14,7 +14,8 @@ Andamio.View = Backbone.View.extend({
     this.isClosed = false;
 
     var data = this._serializeData();
-    this.$el.html(this.template(data));
+    var html = Andamio.Utils.render(this.template, data);
+    this.$el.html(html);
 
     this._bindRegions();
     this._bindUIElements();

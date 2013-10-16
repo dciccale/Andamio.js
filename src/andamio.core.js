@@ -1,4 +1,4 @@
-(function (global, Backbone, _) {
+(function (global, _, Backbone) {
   'use strict';
 
   var Andamio = {
@@ -8,15 +8,16 @@
     extend: Backbone.Model.extend
   };
 
+  // expose Andamio
+  global.Andamio = Backbone.Andamio = Andamio;
+
   // @include andamio.bindevents.js
   // @include andamio.region.js
   // @include andamio.view.js
   // @include andamio.model.js
   // @include andamio.router.js
   // @include andamio.application.js
-
-  // expose Andamio
-  global.Andamio = Backbone.Andamio = Andamio;
+  // @include andamio.utils.js
 
   // exports
   (function (root, factory) {
@@ -33,4 +34,4 @@
     return Andamio;
   }));
 
-}(this, Backbone, _));
+}(this, _, Backbone));
