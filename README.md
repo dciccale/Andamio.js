@@ -2,7 +2,7 @@
 
 A mini framework to ease the development of your [Backbone.js](http://backbonejs.com) apps.
 
-Havily inspired by [MarionetteJS](http://marionettejs.com/) from [Derick Bailey](http://lostechies.com).
+Heavily inspired by [MarionetteJS](http://marionettejs.com/) from [Derick Bailey](http://lostechies.com).
 
 #### Why?
 
