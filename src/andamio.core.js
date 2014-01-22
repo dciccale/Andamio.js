@@ -1,6 +1,7 @@
 (function (global, _, Backbone) {
   'use strict';
 
+  // global namespace
   var Andamio = {
     // use default DOM library
     $: Backbone.$,
