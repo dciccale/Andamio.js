@@ -9,6 +9,7 @@ module.exports = ->
     # PATHS
     JS_DIR: 'js/'
     CSS_DIR: '../css/'
+    TEMPLATES_DIR: 'templates/'
     DIST_DIR: '../dist/'
     MID_DIR: '../mid/'
     TMP_DIR: '../tmp/'
@@ -41,6 +42,14 @@ module.exports = ->
           src: ['../<%= JS_DIR %>**/*']
           dest: '<%= TMP_DIR %><%= JS_DIR %>'
         ]
+
+      tpl:
+        files: [
+          expand: true
+          src: ['../<%= TEMPLATES_DIR %>**/*']
+          dest: '<%= TMP_DIR %><%= TEMPLATES_DIR %>'
+        ]
+
 
 
     #--------------------------------------------------------------------------------
@@ -110,23 +119,17 @@ module.exports = ->
     # TEMPLATES
     tplmin:
       dist:
-        files: '<%= TMP_DIR %><%= JS_DIR %>templates/**/*.tpl'
+        files: '<%= TMP_DIR %><%= TEMPLATES_DIR %>**/*.tpl'
 
 
     #--------------------------------------------------------------------------------
     # Optimization
     #--------------------------------------------------------------------------------
 
-    # map view modules
-    views: @file.expand({cwd: '../js'}, ['views/*']).map (f) -> f.replace /\.js$/, ''
-
     requirejs:
       compile:
         options:
-          modules: [
-            name: 'app'
-            include: '<%= views %>'
-          ]
+          name: 'app'
           dir: '<%= MID_DIR %><%= JS_DIR %>'
           appDir: '<%= TMP_DIR %><%= JS_DIR %>'
           baseUrl: '.'
@@ -172,7 +175,7 @@ module.exports = ->
   @loadNpmTasks 'grunt-processhtml'
 
   # separate dist tasks
-  @registerTask 'js:dist', ['clean:mid', 'copy:js', 'tplmin', 'requirejs', 'concat', 'uglify', 'clean:temp', 'clean:mid']
+  @registerTask 'js:dist', ['clean:mid', 'copy:js', 'copy:tpl', 'tplmin', 'requirejs', 'concat', 'uglify', 'clean:temp', 'clean:mid']
   @registerTask 'css:dist', ['cssmin:dist']
   @registerTask 'index:dist', ['clean:mid', 'copy:index', 'processhtml', 'htmlmin', 'clean:temp', 'clean:mid']
 

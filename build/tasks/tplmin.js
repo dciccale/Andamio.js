@@ -4,12 +4,12 @@
  * Released under the MIT license
  * https://github.com/dciccale/grunt-underscore-tplmin/blob/master/LICENSE.txt
  */
+
+'use strict';
+
 module.exports = function (grunt) {
 
   var _ = grunt.util._;
-  var _compress = function (src) {
-    return _.trim(_.clean(src));
-  };
 
   grunt.registerMultiTask('tplmin', 'Minify underscore templates removing white spaces', function () {
 
@@ -19,7 +19,7 @@ module.exports = function (grunt) {
 
     files.map(function (path) {
       var src = grunt.file.read(path);
-      var srcMin = _compress(src);
+      var srcMin = _.trim(_.clean(src));
       var file = {path: path};
 
       // check if minified version works
@@ -30,7 +30,7 @@ module.exports = function (grunt) {
 
       // if not, use original source
       } catch (e) {
-        grunt.fail.warn("Cannot minify " + path + ". --force will use original file");
+        grunt.fail.warn('Unable to minify "' + path + '". --force will use original file');
         file.min = src;
         return file;
       }
