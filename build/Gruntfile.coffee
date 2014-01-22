@@ -2,7 +2,6 @@
 # Grunt build script for your Backbone.Andamio apps
 #--------------------------------------------------------------------------------
 
-fs = require('fs')
 module.exports = ->
 
   @initConfig
