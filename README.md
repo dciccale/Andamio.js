@@ -1,4 +1,6 @@
-<img src="https://raw.github.com/dciccale/Andamio.js/master/andamiojs-logo.png" width="400" height="67" alt="Andamio.js logo">
+<p align="right"><a href="http://gruntjs.com"><img src="https://cdn.gruntjs.com/builtwith.png" alt="Built with Grunt"></a></p>
+
+<img src="https://raw.github.com/dciccale/Andamio.js/master/andamiojs-logo.png" width="400" height="67" alt="Andamio.js logo"> beta
 
 A mini framework to ease the development of your [Backbone.js](http://backbonejs.com) apps.
 
@@ -8,12 +10,6 @@ Heavily inspired by [MarionetteJS](http://marionettejs.com/) from [Derick Bailey
 
 This mini framework aims to be as lightweight as posible while providing the boilerplate code (and a bit more) for a Backbone.js app leaving out many other features that other frameworks add which I consider not that essential.
 
-
----
-
-**Note:** This is in beta.
-
----
 
 ## Documentation
 
@@ -26,6 +22,8 @@ Just run `grunt` from the command-line inside the `build/` directory.
 
 ## Author
 Denis Ciccale ([@tdecs](http://twitter.com/tdecs))
+
+*Thanks to Javier López ([@javierland](http://twitter.com/javierland)) for making the logo.*
 
 ## License
 See [LICENSE.txt](https://raw.github.com/dciccale/Andamio.js/master/LICENSE.txt)
