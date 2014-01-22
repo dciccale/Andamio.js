@@ -6,6 +6,7 @@
     if (!callback) {
       throw new Error('Method "' + methodName + '" was configured as an event handler, but does not exist.');
     }
+
     target.listenTo(obj, name, callback);
   }
 
@@ -20,13 +21,13 @@
     });
   }
 
-  // iterate the bindings and apply corresponding bidning method
+  // Iterate the bindings and apply corresponding bidning method
   function iterateEvents(target, obj, bindings, method) {
     if (!obj || !bindings) {
       return;
     }
 
-    // iterate the bindings and un/bind them
+    // Iterate the bindings and un/bind them
     _.each(bindings, function (methods, name) {
       var methodNames = methods.split(methodSplitter);
       handler(target, obj, name, methodNames, method);

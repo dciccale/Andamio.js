@@ -14,18 +14,19 @@ Andamio.Model = Backbone.Model.extend({
     ready: false
   },
 
-  // simple way to know if a model is raedy
-  // usefule for showing a loading component
+  // Simple way to know if a model is ready
+  // Useful for showing a loading component
+  // Should be overriden
   isReady: function () {
     return true;
   },
 
-  // shortcut for telling the model is ready
-  _setReady: function () {
+  // Shortcut to set the model as ready
+  setReady: function () {
     this.set('ready', true);
   },
 
-  /* extend model attributes with computed properties
+  /* Extend model attributes with computed properties
    * computedProperties: {
    *   fullName: function () {
    *     return this.name + ' ' + this.last;
@@ -34,9 +35,12 @@ Andamio.Model = Backbone.Model.extend({
    */
   _mixinComputedProperties: function () {
     var attributes = this.attributes || {};
+
     return _.extend(attributes, this.computedProperties);
   },
 
-  // default function to be called from the router recieving url params
+  // Default function to be called from the router recieving url params
+  // should be overridden by the model for example if params need to be parsed or
+  // prepared and finally call the fetch method
   load: function () {}
 });

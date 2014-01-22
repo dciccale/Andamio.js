@@ -1,21 +1,39 @@
 Andamio.Region = function (options) {
-  this.options = options || {};
-  this.$el = this.options.$el;
+  _.extend(this, options);
+
+  if (!this.el && !this.$el) {
+    throw new Error('An "el" or "$el" property must be specified for a region');
+  }
+
+  if (this.initialize) {
+    this.initialize.apply(this, arguments);
+  }
 };
 
-_.extend(Andamio.Region, {
+_.extend(Andamio.Region.prototype, Backbone.Events, {
   show: function (view) {
+    var isDifferentView;
+
     this._ensureEl();
-    if (view !== this.currentView) {
+
+    isDifferentView = view !== this.currentView;
+
+    if (isDifferentView) {
       this.close();
-      view.render();
-      this.open(view);
-    } else {
-      view.render();
     }
+
+    view.render();
+
+    if (isDifferentView || view.isClosed) {
+      this.open(view);
+    }
+
     this.currentView = view;
+
+    this.trigger.call(this, 'show', view);
+
     if (_.isFunction(this.onShow)) {
-      this.onShow();
+      this.onShow.apply(this, _.tail(arguments));
     }
   },
 
@@ -25,10 +43,21 @@ _.extend(Andamio.Region, {
 
   close: function () {
     var view = this.currentView;
+
     if (!view || view.isClosed) {
       return;
     }
-    view.close();
+
+    if (view.close) {
+      view.close();
+    } else if (view.remove) {
+      view.remove();
+    }
+
+    if (_.isFunction(this.onClose)) {
+      this.onClose();
+    }
+
     delete this.currentView;
   },
 
@@ -36,5 +65,10 @@ _.extend(Andamio.Region, {
     if (!this.$el || this.$el.length === 0) {
       this.$el = $('[data-region="' + this.el + '"]');
     }
+  },
+
+  reset: function () {
+    this.close();
+    delete this.$el;
   }
 });
