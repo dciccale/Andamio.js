@@ -13,10 +13,9 @@ _.extend(Andamio.Application.prototype, Backbone.Events, Andamio.Region, {
   // starts the app
   start: function (options) {
     _.extend(this, options);
+    this._initAppView();
     this._initRouter();
     this.initialize.apply(this, arguments);
-    this._initAppView();
-    this.listenTo(this.router, 'navigate', this.show);
   },
 
   initialize: function () {},
@@ -24,11 +23,13 @@ _.extend(Andamio.Application.prototype, Backbone.Events, Andamio.Region, {
   // initialize app router
   _initRouter: function () {
     this.router = new this.router();
+    this.listenTo(this.router, 'navigate', this.show);
     Backbone.history.start();
     // navigate to default route
     var defaultRoute = _.findWhere(this.router.routes, {default: true});
     if (defaultRoute && !Backbone.history.fragment) {
       this.router.navigate(defaultRoute.url, {trigger: true, replace: true});
+      // this.router._routeCallback(defaultRoute.url, defaultRoute.name, defaultRoute.view);
     }
   },
 
