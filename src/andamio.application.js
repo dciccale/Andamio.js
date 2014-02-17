@@ -15,9 +15,11 @@ _.extend(Andamio.Application.prototype, Backbone.Events, {
     if (options.appView) {
       this._initAppView(options.appView);
     }
+
     if (this.router) {
       this._initRouter();
     }
+
     this.initialize.apply(this, arguments);
   },
 
@@ -27,7 +29,10 @@ _.extend(Andamio.Application.prototype, Backbone.Events, {
   _initRouter: function () {
     var that = this;
 
-    this.router = new this.router();
+    // Instantiate the Router if it's the constructor
+    if (_.isFunction(this.router)) {
+      this.router = new this.router();
+    }
 
     // Application region manages all views that are requested upon navigation
     this.appRegion = new Andamio.Region({
@@ -45,6 +50,7 @@ _.extend(Andamio.Application.prototype, Backbone.Events, {
     // Navigate to default route
     if (!Backbone.history.fragment) {
       var defaultRoute = _.findWhere(this.router.routes, {default: true});
+
       if (defaultRoute) {
         this.router.navigate(defaultRoute.url, {trigger: true});
       }
