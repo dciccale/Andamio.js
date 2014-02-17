@@ -27,7 +27,7 @@
       return;
     }
 
-    // Iterate the bindings and un/bind them
+    // Iterate the bindings and bind/unbind them
     _.each(bindings, function (methods, name) {
       var methodNames = methods.split(methodSplitter);
       handler(target, obj, name, methodNames, method);
@@ -42,4 +42,4 @@
     iterateEvents(target, obj, bindings, _unbind);
   };
 
-})(Andamio);
+}(Andamio));
