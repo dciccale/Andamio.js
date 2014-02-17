@@ -162,7 +162,6 @@ module.exports = ->
   # Load main tasks
   #--------------------------------------------------------------------------------
 
-  @loadTasks 'tasks'
   @loadNpmTasks 'grunt-contrib-copy'
   @loadNpmTasks 'grunt-contrib-clean'
   @loadNpmTasks 'grunt-contrib-concat'
