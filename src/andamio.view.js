@@ -87,7 +87,9 @@ _.extend(Andamio.View.prototype, Backbone.View.prototype, {
     this.subviews = {};
 
     _.each(_.keys(this._subviews), function (key) {
-      this.subviews[key] = new this._subviews[key]();
+
+      // Instantiate subviews if needed
+      this.subviews[key] = _.isFunction(this._subviews[key]) ? new this._subviews[key]() : this._subviews[key];
     }, this);
   },
 
@@ -109,15 +111,15 @@ _.extend(Andamio.View.prototype, Backbone.View.prototype, {
       return;
     }
 
+    // Save ui selectors
     if (!this._ui) {
       this._ui = this.ui;
     }
 
-    this.ui = {};
-
-    _.each(_.keys(this._ui), function (key) {
-      this.ui[key] = this.$(this._ui[key]);
-    }, this);
+    // Remap ui to DOM elements
+    this.ui = _.object(_.map(this._ui, function(selector, key) {
+      return [key, this.$(selector)];
+    }, this));
   },
 
   // This method unbinds the elements specified in the "ui" hash
