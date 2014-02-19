@@ -8,7 +8,7 @@ Heavily inspired by the awesome [MarionetteJS](http://marionettejs.com/) project
 
 #### Why?
 
-This mini framework aims to be as lightweight as posible while providing the boilerplate code (and a bit more) for a Backbone.js single page app, leaving out many other features that other frameworks add which I consider not that essential.
+This mini framework aims to be as lightweight as posible while providing the boilerplate code (and a bit more) for a Backbone.js single page app.
 
 
 ## Documentation
