@@ -1,53 +1,13 @@
-Andamio.View = function () {
-  _.bindAll(this, 'render');
+Andamio.View = Backbone.View.extend({
 
-  // Allow passing a model or collection constructor to be automatically initialized
+  constructor: function () {
+    _.bindAll(this, 'render');
 
-  if (this.model) {
-    this.model = new this.model();
-  }
-
-  if (this.collection) {
-    this.collection = new this.collection();
-  }
-
-  Backbone.View.prototype.constructor.apply(this, arguments);
-};
-
-_.extend(Andamio.View.prototype, Backbone.View.prototype, {
-
-  render: function () {
-    var data, html;
-
-    this.isClosed = false;
-
-    data = this._serializeData();
-
-    html = Andamio.Utils.render(this.template, data);
-
-    this.$el.html(html);
-
-    this._createSubViews();
-    this._bindRegions();
-    this._bindUIElements();
-
-    if (_.isFunction(this.afterRender)) {
-      this.afterRender();
-    }
-
-    return this;
-  },
-
-  _serializeData: function () {
-    return this.model ?
-      this.model.toJSON() : this.collection ? {items: this.collection.toJSON()} : {};
+    Backbone.View.prototype.constructor.apply(this, arguments);
   },
 
   // Look for dom elements with the attribute `data-region`
-  // inside this view and create regions.
-  //
-  // Also if a `subviews` property is provided in this view
-  // try to match them to a region by its name
+  // inside this view template and create regions automatically
   _bindRegions: function () {
     var $regions = this.$('[data-region]');
 
@@ -75,6 +35,16 @@ _.extend(Andamio.View.prototype, Backbone.View.prototype, {
     this._deleteProp('regions');
   },
 
+  // Public method to track subviews
+  addSubview: function (key, view) {
+    if (!this.subviews) {
+      this.subviews = {};
+    }
+
+    // Instantiate subviews if needed
+    this.subviews[key] = _.isFunction(view) ? new view() : view;
+  },
+
   _createSubViews: function () {
     if (!this.subviews) {
       return;
@@ -88,8 +58,8 @@ _.extend(Andamio.View.prototype, Backbone.View.prototype, {
 
     _.each(_.keys(this._subviews), function (key) {
 
-      // Instantiate subviews if needed
-      this.subviews[key] = _.isFunction(this._subviews[key]) ? new this._subviews[key]() : this._subviews[key];
+      // Add subviews to stack
+      this.addSubview(key, this._subviews[key]);
     }, this);
   },
 
@@ -166,7 +136,7 @@ _.extend(Andamio.View.prototype, Backbone.View.prototype, {
     Andamio.unbindEvents(this, this.collection, this.collectionEvents);
   },
 
-  // Helper method to correctly delete properties
+  // Helper method to correctly delete properties from the view
   _deleteProp: function (prop) {
     var obj = this[prop];
 
@@ -177,5 +147,3 @@ _.extend(Andamio.View.prototype, Backbone.View.prototype, {
     delete this[prop];
   }
 });
-
-Andamio.View.extend = Backbone.View.extend;
