@@ -47,7 +47,8 @@ module.exports = function (grunt) {
       options: {
         banner: '/*! <%= PKG.name %> v<%= PKG.version %> | <%= PKG.homepage %> | <%= PKG.licenses[0].url %> */\n',
         sourceMap: true,
-        sourceMapName: '<%= DIST_FILE %>.map'
+        sourceMapName: '<%= DIST_FILE %>.map',
+        report: 'gzip'
       },
       lib: {
         src: '<%= DIST_FILE %>.js',
