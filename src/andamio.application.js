@@ -16,8 +16,9 @@ _.extend(Andamio.Application.prototype, Backbone.Events, {
       this._initAppView(options.appView);
     }
 
-    if (this.router) {
-      this._initRouter();
+    // Initialize the router
+    if (options.router) {
+      this._initRouter(options.router);
     }
 
     this.initialize.apply(this, arguments);
@@ -26,24 +27,12 @@ _.extend(Andamio.Application.prototype, Backbone.Events, {
   initialize: function () {},
 
   // Initialize app router
-  _initRouter: function () {
-    var that = this;
+  _initRouter: function (router) {
 
-    // Instantiate the Router if it's the constructor
-    if (_.isFunction(this.router)) {
-      this.router = new this.router();
-    }
+    // Instantiate the Router
+    this.router = _.isFunction(router) ? new router() : router;
 
-    // Application region manages all views that are requested upon navigation
-    this.appRegion = new Andamio.Region({
-      el: this.el,
-      initialize: function () {
-        this.listenTo(that.router, 'navigate', this.show);
-      },
-      onShow: function () {
-        that.vent.trigger('navigate', this.currentView);
-      }
-    });
+    this._initAppRegion();
 
     Backbone.history.start();
 
@@ -57,10 +46,26 @@ _.extend(Andamio.Application.prototype, Backbone.Events, {
     }
   },
 
+  // Application region that manages all requested views upon navigation
+  _initAppRegion: function () {
+    var app = this;
+
+    this.appRegion = new Andamio.Region({
+      el: this.el,
+      initialize: function () {
+        this.listenTo(app.router, 'navigate', this.show);
+      },
+      onShow: function () {
+        app.vent.trigger('navigate', this.currentView);
+      }
+    });
+  },
+
   // Initialize app view
   _initAppView: function (appView) {
-    $(this.container).empty().append(appView.render().el);
-    this.appView = appView;
+    this.appView = _.isFunction(appView) ? new appView() : appView;
+
+    $(this.container).empty().append(this.appView.render().el);
   }
 });
 
