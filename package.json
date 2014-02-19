@@ -1,7 +1,7 @@
 {
   "name": "backbone.andamio",
   "description": "A mini framework to ease the develop of your Backbone.js apps.",
-  "version": "1.2.7",
+  "version": "1.2.8",
   "author": "Denis Ciccale (@tdecs)",
   "homepage": "http://andamiojs.com",
   "readmeFilename": "README.md",
