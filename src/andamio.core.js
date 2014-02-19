@@ -12,13 +12,16 @@
   // expose Andamio
   global.Andamio = Backbone.Andamio = Andamio;
 
+  // @include andamio.utils.js
   // @include andamio.bindevents.js
   // @include andamio.region.js
   // @include andamio.view.js
+  // @include andamio.itemview.js
+  // @include andamio.collectionview.js
   // @include andamio.model.js
+  // @include andamio.collection.js
   // @include andamio.router.js
   // @include andamio.application.js
-  // @include andamio.utils.js
 
   // exports
   (function (root, factory) {
@@ -31,7 +34,6 @@
       define(['underscore', 'backbone'], factory);
     }
   }(this, function (_, Backbone) {
-    /* jshint unused: vars */
     return Andamio;
   }));
 
