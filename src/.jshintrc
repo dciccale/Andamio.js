@@ -1,5 +1,4 @@
 {
-  "es5": true,
   "supernew": true,
   "latedef": true,
   "noempty": true,
@@ -10,7 +9,6 @@
   "noarg": true,
   "quotmark": "single",
   "undef": true,
-  "unused": true,
   "trailing": true,
   "browser": true,
   "globals": {
