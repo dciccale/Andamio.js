@@ -1,45 +1,38 @@
 (function (Andamio) {
-
   var methodSplitter = /\s+/;
 
-  function _bind(target, obj, name, callback, methodName) {
-    if (!callback) {
-      throw new Error('Method "' + methodName + '" was configured as an event handler, but does not exist.');
-    }
-
-    target.listenTo(obj, name, callback);
-  }
-
-  function _unbind(target, obj, name, callback) {
-    target.stopListening(obj, name, callback);
-  }
-
-  function handler(target, obj, name, methodNames, method) {
-    _.each(methodNames, function (methodName) {
-      var callback = target[methodName];
-      method(target, obj, name, callback, methodName);
-    });
-  }
-
-  // Iterate the bindings and apply corresponding bidning method
-  function iterateEvents(target, obj, bindings, method) {
+  function resolveBindings(target, obj, bindings, strict) {
+    var resolved = [];
     if (!obj || !bindings) {
-      return;
+      return resolved;
     }
-
-    // Iterate the bindings and bind/unbind them
     _.each(bindings, function (methods, name) {
-      var methodNames = methods.split(methodSplitter);
-      handler(target, obj, name, methodNames, method);
+      var methodNames = _.isFunction(methods) ? [methods] : methods.trim().split(methodSplitter);
+      _.each(methodNames, function (methodName) {
+        var callback = _.isFunction(methodName) ? methodName : target[methodName];
+        if (!_.isFunction(callback)) {
+          if (strict) {
+            throw new Error('Method "' + methodName + '" was configured as an event handler, but does not exist.');
+          }
+          return;
+        }
+        resolved.push({ obj: obj, name: name, callback: callback });
+      });
     });
+    return resolved;
   }
 
   Andamio.bindEvents = function (target, obj, bindings) {
-    iterateEvents(target, obj, bindings, _bind);
+    var resolved = resolveBindings(target, obj, bindings, true);
+    _.each(resolved, function (binding) {
+      target.listenTo(binding.obj, binding.name, binding.callback);
+    });
+    return resolved;
   };
 
   Andamio.unbindEvents = function (target, obj, bindings) {
-    iterateEvents(target, obj, bindings, _unbind);
+    _.each(resolveBindings(target, obj, bindings, false), function (binding) {
+      target.stopListening(binding.obj, binding.name, binding.callback);
+    });
   };
-
 }(Andamio));

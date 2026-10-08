@@ -1,29 +1,68 @@
-<p align="right"><a href="http://gruntjs.com"><img src="https://cdn.gruntjs.com/builtwith.png" alt="Built with Grunt"></a></p>
+# Andamio.js
 
-<img src="https://raw.github.com/dciccale/Andamio.js/master/andamiojs-logo.png" width="400" height="67" alt="Andamio.js logo"> beta
+<img src="andamiojs-logo.png" width="400" height="67" alt="Andamio.js logo">
 
-A mini framework to ease the development of your [Backbone.js](http://backbonejs.com) apps.
+Andamio adds view lifecycle management, regions, collection views, and application routing to [Backbone.js](https://backbonejs.org/).
 
-Heavily inspired by the awesome [MarionetteJS](http://marionettejs.com/) project from [Derick Bailey](http://lostechies.com).
+## Run the sample app
 
-#### Why?
+Use Node 22.22.2 or later in the 22.x series, Node 24.15.0 or later in the 24.x series, or Node 26 or later.
 
-This mini framework aims to be as lightweight as posible while providing the boilerplate code (and a bit more) for a Backbone.js single page app.
+From a checkout of this repository, run:
 
+```sh
+npm ci
+npm run example
+```
 
-## Documentation
+Open [the local sample](http://127.0.0.1:3000). Add a task, mark it complete, and move between the Tasks and About pages.
+Tasks stay in memory until you reload the page. The sample uses local dependencies and requires no external service.
+To use another port, run `PORT=3001 npm run example`.
 
-Coming soon...
+## Use the library
 
-## Build process
-There is a default [Grunt.js](http://gruntjs.com) file for the build process included in the `build/` folder to optimize the output of your Andamio.js app.
+The package name is `andamiojs`. The browser namespace is `Andamio`.
 
-Just run `grunt` from the command-line inside the `build/` directory.
+```sh
+npm install andamiojs
+```
 
-## Author
-Denis Ciccale ([@tdecs](http://twitter.com/tdecs))
+The supported peers are Backbone 1.6.1, Underscore 1.13.8, and jQuery 3.7.1 or 4.0.0.
 
-*Thanks to Javier López ([@javierland](http://twitter.com/javierland)) for making the logo.*
+For a browser app, load jQuery, Underscore, Backbone, and `lib/andamio.js` in that order.
+The browser build exposes `Andamio` and `Backbone.Andamio`.
+The minified build is `lib/andamio.min.js`.
 
-## License
-See [LICENSE.txt](https://raw.github.com/dciccale/Andamio.js/master/LICENSE.txt)
+For CommonJS, import the package and configure Backbone's DOM library before you create a view.
+
+```js
+const Backbone = require('backbone');
+const Andamio = require('andamiojs');
+Backbone.$ = require('jquery');
+```
+
+Models and collections work without a DOM. Views require a browser or a DOM environment.
+AMD loaders resolve `underscore` and `backbone` before they run the Andamio factory.
+See the [API reference](docs/api.md) for configuration and the [sample source](examples/todos/app.js) for a complete app.
+
+## Check and build changes
+
+```sh
+npm run check
+npm audit
+npm run build
+npm pack --dry-run
+```
+
+`npm run check` runs ESLint and the Node tests with coverage.
+The tests use real Backbone, jQuery, and jsdom. They also load the sample over HTTP and exercise its task and route behavior.
+`npm run build` generates the browser and CommonJS bundle, the minified bundle, and its source map in `lib/`.
+Edit `src/` and rebuild the bundles. The old Grunt tasks and incomplete `build/` app template have been removed.
+
+See the [project review](docs/review.md) for confirmed defects, security audit results, compatibility changes, and remaining work.
+
+## Author and license
+
+Denis Ciccale. Logo by Javier López.
+
+[MIT license](LICENSE.txt).

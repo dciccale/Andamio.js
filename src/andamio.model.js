@@ -2,11 +2,19 @@ Andamio.Model = Backbone.Model.extend({
   constructor: function (attributes, options) {
     this.configure(options);
     Backbone.Model.apply(this, arguments);
-    this._mixinComputedProperties();
   },
 
   configure: function (options) {
-    _.extend(this.defaults, this.constructor.__super__.defaults);
+    var chain = [];
+    var prototype = Object.getPrototypeOf(this);
+    while (prototype) {
+      if (Object.prototype.hasOwnProperty.call(prototype, 'defaults')) {
+        var defaults = prototype.defaults;
+        chain.unshift(_.isFunction(defaults) ? defaults.call(this) : defaults);
+      }
+      prototype = Object.getPrototypeOf(prototype);
+    }
+    this.defaults = _.extend.apply(_, [{}].concat(chain));
     this.options = options || {};
   },
 
@@ -26,17 +34,21 @@ Andamio.Model = Backbone.Model.extend({
     this.set('ready', true);
   },
 
-  /* Extend model attributes with computed properties
-   * computedProperties: {
-   *   fullName: function () {
-   *     return this.name + ' ' + this.last;
-   *   }
-   * }
-   */
-  _mixinComputedProperties: function () {
-    var attributes = this.attributes || {};
+  // Computed functions read current attributes each time.
+  get: function (name) {
+    var computed = this.computedProperties;
+    if (computed && Object.prototype.hasOwnProperty.call(computed, name)) {
+      return _.isFunction(computed[name]) ? computed[name].call(this.attributes) : computed[name];
+    }
+    return Backbone.Model.prototype.get.call(this, name);
+  },
 
-    return _.extend(attributes, this.computedProperties);
+  toJSON: function () {
+    var data = Backbone.Model.prototype.toJSON.call(this);
+    _.each(this.computedProperties, function (value, name) {
+      data[name] = this.get(name);
+    }, this);
+    return data;
   },
 
   // Default function to be called from the router recieving url params

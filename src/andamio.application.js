@@ -12,6 +12,10 @@ _.extend(Andamio.Application.prototype, Backbone.Events, {
 
   // Starts the app
   start: function (options) {
+    options = options || {};
+    if (options.router && Backbone.History.started) {
+      throw new Error('Stop Backbone history before starting an application router.');
+    }
     if (options.appView) {
       this._initAppView(options.appView);
     }
@@ -22,9 +26,38 @@ _.extend(Andamio.Application.prototype, Backbone.Events, {
     }
 
     this.initialize.apply(this, arguments);
+    return this;
   },
 
   initialize: function () {},
+
+  // Release views, listeners, and the history started by this application.
+  stop: function () {
+    if (this.appRegion) {
+      this.appRegion.close();
+      this.appRegion.stopListening();
+      delete this.appRegion;
+    }
+    if (this.appView) {
+      if (this.appView.close) {
+        this.appView.close();
+      } else {
+        this.appView.remove();
+      }
+      delete this.appView;
+    }
+    if (this.router) {
+      Backbone.history.stop();
+      if (this.router.close) {
+        this.router.close();
+      } else {
+        this.router.stopListening();
+      }
+      delete this.router;
+    }
+    this.stopListening();
+    return this;
+  },
 
   // Initialize app router
   _initRouter: function (router) {
@@ -34,14 +67,15 @@ _.extend(Andamio.Application.prototype, Backbone.Events, {
 
     this._initAppRegion();
 
-    Backbone.history.start();
+    Backbone.history.start(this.historyOptions);
 
     // Navigate to default route
     if (!Backbone.history.fragment) {
       var defaultRoute = _.findWhere(this.router.routes, {default: true});
 
       if (defaultRoute) {
-        this.router.navigate(defaultRoute.url, {trigger: true});
+        var url = _.isArray(defaultRoute.url) ? defaultRoute.url[0] : defaultRoute.url;
+        this.router.navigate(url, {trigger: true});
       }
     }
   },
@@ -63,9 +97,16 @@ _.extend(Andamio.Application.prototype, Backbone.Events, {
 
   // Initialize app view
   _initAppView: function (appView) {
+    if (this.appView && this.appView !== appView) {
+      if (this.appView.close) {
+        this.appView.close();
+      } else {
+        this.appView.remove();
+      }
+    }
     this.appView = _.isFunction(appView) ? new appView() : appView;
 
-    $(this.container).empty().append(this.appView.render().el);
+    Andamio.$(this.container).empty().append(this.appView.render().el);
   }
 });
 

@@ -1,0 +1,25 @@
+:root { font-family: system-ui, sans-serif; color: #233247; background: #f2f5f8; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+main { max-width: 760px; margin: 32px auto; padding: 0 24px; }
+header { display: flex; align-items: center; justify-content: space-between; padding: 24px 0; }
+a { color: #225bc1; text-underline-offset: 4px; }
+.brand { font-size: 24px; font-weight: 700; text-decoration: none; }
+nav { display: flex; gap: 20px; }
+section { padding: 28px; background: white; border: 1px solid #d9e1ea; border-radius: 12px; }
+h1 { margin-top: 0; }
+label { font-weight: 500; }
+.entry { display: flex; gap: 12px; margin-top: 8px; }
+input[name="title"] { flex: 1; min-width: 0; border: 1px solid #9aadc3; border-radius: 6px; padding: 10px; font: inherit; }
+button { border: 1px solid #225bc1; border-radius: 6px; padding: 10px 14px; color: white; background: #225bc1; font: inherit; cursor: pointer; }
+button:hover { background: #17479d; }
+.tasks { list-style: none; padding: 0; margin-bottom: 0; }
+.tasks li { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 0; border-top: 1px solid #e1e7ef; }
+.tasks label { overflow-wrap: anywhere; }
+.remove { background: white; color: #225bc1; flex-shrink: 0; }
+.remove:hover { background: #eef3ff; }
+.done { text-decoration: line-through; color: #56687e; }
+.status, footer { color: #56687e; }
+footer { padding: 24px 0; font-size: 14px; }
+:focus-visible { outline: 3px solid #ed9d23; outline-offset: 3px; }
+@media (max-width: 500px) { main { padding: 0 12px; margin-top: 0; } section { padding: 20px; } .entry { flex-direction: column; } }

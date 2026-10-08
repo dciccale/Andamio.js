@@ -1,32 +1,60 @@
 {
-  "name": "backbone.andamio",
-  "description": "A mini framework to ease the develop of your Backbone.js apps.",
-  "version": "1.2.8",
-  "author": "Denis Ciccale (@tdecs)",
-  "homepage": "http://andamiojs.com",
-  "readmeFilename": "README.md",
-  "repositories": [
-    {
-      "type": "git",
-      "url": "https://github.com/dciccale/Andamio.js.git"
-    }
-  ],
+  "name": "andamiojs",
+  "description": "A small framework for Backbone.js applications.",
+  "version": "1.0.0",
+  "author": "Denis Ciccale (@dciccale)",
+  "homepage": "https://github.com/dciccale/Andamio.js",
   "bugs": {
-    "url": "http://github.com/dciccale/Andamio.js/issues"
+    "url": "https://github.com/dciccale/Andamio.js/issues"
   },
-  "licenses": [
-    {
-      "type": "MIT",
-      "url": "https://github.com/dciccale/Andamio.js/blob/master/LICENSE.txt"
-    }
-  ],
-  "dependencies": {},
   "devDependencies": {
-    "grunt": "0.4.2",
-    "grunt-directives": "0.1.2",
-    "grunt-contrib-jshint": "0.8.0",
-    "grunt-contrib-uglify": "0.3.2",
-    "grunt-contrib-watch": "0.5.3"
+    "backbone": "1.6.1",
+    "underscore": "1.13.8",
+    "jquery": "4.0.0",
+    "jsdom": "30.1.2",
+    "terser": "5.51.2",
+    "eslint": "10.12.0",
+    "@eslint/js": "10.0.1",
+    "globals": "17.13.0"
   },
-  "keywords": ["backbone", "andamio", "plugin", "single", "page", "app"]
+  "keywords": [
+    "backbone",
+    "andamio",
+    "plugin",
+    "single",
+    "page",
+    "app"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dciccale/Andamio.js.git"
+  },
+  "license": "MIT",
+  "main": "lib/andamio.js",
+  "files": [
+    "lib",
+    "src",
+    "LICENSE.txt",
+    "README.md",
+    "docs",
+    "andamiojs-logo.png",
+    "CHANGELOG.md"
+  ],
+  "engines": {
+    "node": "^22.22.2 || ^24.15.0 || >=26.0.0"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "lint": "eslint .",
+    "test": "npm run build && node --test",
+    "test:coverage": "npm run build && node --test --experimental-test-coverage",
+    "check": "npm run lint && npm run test:coverage",
+    "example": "npm run build && node scripts/serve-example.mjs",
+    "prepack": "npm run build"
+  },
+  "peerDependencies": {
+    "backbone": "^1.6.1",
+    "underscore": "^1.13.8",
+    "jquery": "^3.7.1 || ^4.0.0"
+  }
 }

@@ -2,6 +2,8 @@ Andamio.View = Backbone.View.extend({
 
   constructor: function () {
     _.bindAll(this, 'render');
+    this.subviews = _.extend(Object.create(null), _.result(this, 'subviews'));
+    this._subviewDefinitions = _.extend(Object.create(null), this.subviews);
 
     Backbone.View.prototype.constructor.apply(this, arguments);
   },
@@ -15,12 +17,16 @@ Andamio.View = Backbone.View.extend({
       return;
     }
 
-    this.regions = {};
+    this.regions = Object.create(null);
 
     // Populate regions
     _.each($regions, function (el) {
-      var $el = $(el);
+      var $el = Andamio.$(el);
       var regionName = $el.attr('data-region');
+
+      if (this.regions[regionName]) {
+        throw new Error('Region names must be unique within a view: ' + regionName);
+      }
 
       // Create a new region
       this.regions[regionName] = new Andamio.Region({$el: $el});
@@ -32,49 +38,56 @@ Andamio.View = Backbone.View.extend({
       return;
     }
 
-    this._deleteProp('regions');
+    _.invoke(this.regions, 'close');
+    _.invoke(this.regions, 'stopListening');
+    delete this.regions;
   },
 
-  // Public method to track subviews
+  // Track subviews on this instance, never on a shared prototype object.
   addSubview: function (key, view) {
-    if (!this.subviews) {
-      this.subviews = {};
+    if (this.subviews[key] && this.subviews[key] !== view) {
+      this._closeSubview(this.subviews[key]);
     }
-
-    // Instantiate subviews if needed
+    this._subviewDefinitions[key] = view;
     this.subviews[key] = _.isFunction(view) ? new view() : view;
+    return this.subviews[key];
   },
 
   _createSubViews: function () {
-    if (!this.subviews) {
-      return;
-    }
-
-    if (!this._subviews) {
-      this._subviews = this.subviews;
-    }
-
-    this.subviews = {};
-
-    _.each(_.keys(this._subviews), function (key) {
-
-      // Add subviews to stack
-      this.addSubview(key, this._subviews[key]);
+    _.each(this.subviews, function (view, key) {
+      if (_.isFunction(view)) {
+        this.subviews[key] = new view();
+      }
     }, this);
   },
 
-  _removeSubviews: function () {
-    if (!this.subviews) {
+  _closeSubview: function (view) {
+    if (_.isFunction(view)) {
       return;
     }
-
-    _.invoke(this.subviews, 'close');
-
-    this._deleteProp('subviews');
-    this.subviews = this._subviews;
-    delete this._subviews;
+    if (view.close) {
+      view.close();
+    } else {
+      view.remove();
+    }
   },
 
+  _removeSubviews: function () {
+    _.each(this.subviews, this._closeSubview, this);
+    this.subviews = _.extend(Object.create(null), this._subviewDefinitions);
+  },
+
+  _reopen: function () {
+    if (this.isClosed) {
+      this.delegateEvents();
+    }
+    this.isClosed = false;
+  },
+
+  render: function () {
+    this._reopen();
+    return this;
+  },
 
   _bindUIElements: function () {
     if (!this.ui) {
@@ -98,15 +111,14 @@ Andamio.View = Backbone.View.extend({
       return;
     }
 
-    this._deleteProp('ui');
-    this.ui = this._ui;
+    this.ui = this._ui || this.ui;
     delete this._ui;
   },
 
   // Clean up the view and remove from DOM
   close: function () {
     if (this.isClosed) {
-      return;
+      return this;
     }
 
     this.isClosed = true;
@@ -119,31 +131,35 @@ Andamio.View = Backbone.View.extend({
     this._unbindUIElements();
 
     // Call backbone's remove
-    this.remove();
+    Backbone.View.prototype.remove.call(this);
+    return this;
   },
 
-  // Override Backbone's delegateEvents to bind model and collection events
+  remove: function () {
+    return this.close();
+  },
+
+  _unbindDataEvents: function () {
+    _.each(this._dataEventBindings, function (binding) {
+      this.stopListening(binding.obj, binding.name, binding.callback);
+    }, this);
+    this._dataEventBindings = [];
+  },
+
+  // Keep the actual callbacks so function-valued maps can change safely.
   delegateEvents: function (events) {
+    this._unbindDataEvents();
     Backbone.View.prototype.delegateEvents.call(this, events);
-    Andamio.bindEvents(this, this.model, this.modelEvents);
-    Andamio.bindEvents(this, this.collection, this.collectionEvents);
+    this._dataEventBindings = Andamio.bindEvents(this, this.model, _.result(this, 'modelEvents'));
+    this._dataEventBindings = this._dataEventBindings.concat(
+      Andamio.bindEvents(this, this.collection, _.result(this, 'collectionEvents'))
+    );
+    return this;
   },
 
-  // Override Backbone's undelegateEvents to unbind model and collection events
   undelegateEvents: function () {
     Backbone.View.prototype.undelegateEvents.apply(this, arguments);
-    Andamio.unbindEvents(this, this.model, this.modelEvents);
-    Andamio.unbindEvents(this, this.collection, this.collectionEvents);
-  },
-
-  // Helper method to correctly delete properties from the view
-  _deleteProp: function (prop) {
-    var obj = this[prop];
-
-    _.each(obj, function (item, name) {
-      delete obj[name];
-    }, this);
-
-    delete this[prop];
+    this._unbindDataEvents();
+    return this;
   }
 });

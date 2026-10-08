@@ -7,26 +7,35 @@ Andamio.Router = Backbone.Router.extend({
     }
 
     this.routes = _.result(this, 'routes');
+    this._routeHandlers = [];
 
-    _.each(this.routes, function (route) {
+    _.each(this.routes.slice().reverse(), function (route) {
       var urls = _.isArray(route.url) ? route.url : [route.url];
-      var callback;
 
       _.each(urls, function (url) {
 
         // Register the same callback for the same route urls
-        callback = callback || this._createCallback(url, route);
-        this.route(url, route.name, callback);
+        this.route(url, route.name, this._createCallback(url, route));
+        this._routeHandlers.push(Backbone.history.handlers[0]);
       }, this);
 
     }, this);
+  },
+
+  close: function () {
+    var handlers = this._routeHandlers;
+    Backbone.history.handlers = _.filter(Backbone.history.handlers, function (handler) {
+      return !_.contains(handlers, handler);
+    });
+    this._routeHandlers = [];
+    this.stopListening();
   },
 
   _createCallback: function (url, route) {
     var router = this;
     var callback;
 
-    if (route.redirectTo) {
+    if (route.redirectTo !== undefined) {
       callback = function () {
         Backbone.history.navigate(route.redirectTo, {trigger: true, replace: true});
       };

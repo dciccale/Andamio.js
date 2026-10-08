@@ -29,12 +29,13 @@ Andamio.ItemView = Andamio.View.extend({
   render: function () {
     var data, html;
 
-    this.isClosed = false;
+    this._reopen();
 
     data = this.serializeData();
 
     html = Andamio.Utils.render(this.template, data);
 
+    this._unbindRegions();
     this.$el.html(html);
 
     this._createSubViews();

@@ -34,22 +34,22 @@ Andamio.CollectionView = Andamio.View.extend({
 
   _initialEvents: function() {
     if (this.collection) {
-      this.listenTo(this.collection, 'add', this.addChildView, this);
-      this.listenTo(this.collection, 'remove', this.removeItemView, this);
-      this.listenTo(this.collection, 'reset', this.render, this);
+      this.listenTo(this.collection, 'add', this.addChildView);
+      this.listenTo(this.collection, 'remove', this.removeItemView);
+      this.listenTo(this.collection, 'reset sort', this.render);
     }
   },
 
-  addChildView: function (item, collection, options) {
+  addChildView: function (item) {
     var ItemView = this._getItemView(item);
     var index = this.collection.indexOf(item);
 
     this.addItemView(item, ItemView, index);
   },
 
-  _getItemView: function (item) {
+  _getItemView: function () {
     if (!this.itemView) {
-      throw 'An `itemView` must be specified';
+      throw new Error('An `itemView` must be specified');
     }
 
     return this.itemView;
@@ -80,7 +80,10 @@ Andamio.CollectionView = Andamio.View.extend({
   },
 
   render: function () {
-    this.isClosed = false;
+    if (this.isClosed) {
+      this._initialEvents();
+    }
+    this._reopen();
 
     this._renderChildren();
 
@@ -96,14 +99,20 @@ Andamio.CollectionView = Andamio.View.extend({
   addItemView: function (item, ItemView, index) {
 
     // build the view
-    var view = this.buildItemView(item, ItemView, this.itemViewOptions);
+    var options = _.isFunction(this.itemViewOptions) ? this.itemViewOptions(item, index) : this.itemViewOptions;
+    var view = this.buildItemView(item, ItemView, options);
 
     // Store the child view itself so we can properly
     // remove and/or close it later
-    this.children.push(view);
+    this.children.splice(index, 0, view);
 
     // Render it and show it
-    this.renderItemView(view, index);
+    try {
+      this.renderItemView(view, index);
+    } catch (error) {
+      this.removeChildView(view);
+      throw error;
+    }
 
     return view;
   },
@@ -140,7 +149,12 @@ Andamio.CollectionView = Andamio.View.extend({
 
       // If we've already rendered the main collection, just
       // append the new items directly into the element.
-      collectionView.$el.append(itemView.el);
+      var nextView = collectionView.children[index + 1];
+      if (nextView) {
+        nextView.$el.before(itemView.el);
+      } else {
+        collectionView.$el.append(itemView.el);
+      }
     }
   },
 
@@ -149,34 +163,39 @@ Andamio.CollectionView = Andamio.View.extend({
   },
 
   _renderChildren: function () {
+    this.closeChildren();
     this.startBuffering();
 
-    this.closeChildren();
-
-    if (!this.isEmpty()) {
-      this.showCollection();
+    try {
+      if (!this.isEmpty()) {
+        this.showCollection();
+      }
+      this.endBuffering();
+    } catch (error) {
+      this.closeChildren();
+      this.isBuffering = false;
+      this.initRenderBuffer();
+      throw error;
     }
-
-    this.endBuffering();
   },
 
   // Internal method to loop through each item in the
   // collection view and show it
   showCollection: function () {
     this.collection.each(function (item, index) {
-      this.addItemView(item, this.itemView, index);
+      this.addItemView(item, this._getItemView(item), index);
     }, this);
   },
 
   // Clean up the view and remove from DOM
   close: function () {
     if (this.isClosed) {
-      return;
+      return this;
     }
 
     this.closeChildren();
 
-    Andamio.View.prototype.close.apply(this, arguments);
+    return Andamio.View.prototype.close.apply(this, arguments);
   },
 
   closeChildren: function () {

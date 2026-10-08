@@ -5,6 +5,10 @@ Andamio.Region = function (options) {
     throw new Error('An "el" or "$el" property must be specified for a region');
   }
 
+  if (!this.el && this.$el) {
+    this.el = this.$el[0];
+  }
+
   if (this.initialize) {
     this.initialize.apply(this, arguments);
   }
@@ -13,6 +17,10 @@ Andamio.Region = function (options) {
 _.extend(Andamio.Region.prototype, Backbone.Events, {
   show: function (view) {
     var isDifferentView;
+
+    if (!view || !_.isFunction(view.render)) {
+      throw new Error('A region requires a view with a render method.');
+    }
 
     this._ensureEl();
 
@@ -24,7 +32,7 @@ _.extend(Andamio.Region.prototype, Backbone.Events, {
 
     view.render();
 
-    if (isDifferentView || view.isClosed) {
+    if (isDifferentView || view.el.parentNode !== this.$el[0]) {
       this.open(view);
     }
 
@@ -33,8 +41,10 @@ _.extend(Andamio.Region.prototype, Backbone.Events, {
     this.trigger.call(this, 'show', view);
 
     if (_.isFunction(this.onShow)) {
-      this.onShow.apply(this, _.tail(arguments));
+      this.onShow.apply(this, arguments);
     }
+
+    return this;
   },
 
   open: function (view) {
@@ -44,13 +54,13 @@ _.extend(Andamio.Region.prototype, Backbone.Events, {
   close: function () {
     var view = this.currentView;
 
-    if (!view || view.isClosed) {
+    if (!view) {
       return;
     }
 
-    if (view.close) {
+    if (view.close && !view.isClosed) {
       view.close();
-    } else if (view.remove) {
+    } else if (view.remove && !view.isClosed) {
       view.remove();
     }
 
@@ -63,7 +73,17 @@ _.extend(Andamio.Region.prototype, Backbone.Events, {
 
   _ensureEl: function () {
     if (!this.$el || this.$el.length === 0) {
-      this.$el = $('[data-region="' + this.el + '"]');
+      if (typeof this.el === 'string') {
+        var name = this.el;
+        this.$el = Andamio.$('[data-region]').filter(function () {
+          return Andamio.$(this).attr('data-region') === name;
+        });
+      } else {
+        this.$el = Andamio.$(this.el);
+      }
+    }
+    if (this.$el.length !== 1) {
+      throw new Error('A region must resolve to exactly one element.');
     }
   },
 
